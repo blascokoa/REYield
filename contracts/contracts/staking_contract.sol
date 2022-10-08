@@ -15,6 +15,7 @@ contract ERC721Staking is ReentrancyGuard {
 
     // Rewards per hour per token deposited in wei.
     uint256 private rewardsPerHour = 10000;
+    uint256 private stakedNFTs = 0;
 
     // Constructor function to set the rewards token and the NFT collection addresses
     constructor(IERC721 _nftCollection, IERC20 _rewardsToken) {
@@ -52,7 +53,7 @@ contract ERC721Staking is ReentrancyGuard {
 
 
     function updateRewardsPerHour() public {
-        rewardsPerHour = rewardsToken.balanceOf(address(this)) / 30 / 24 / StakedToken.length;
+        rewardsPerHour = rewardsToken.balanceOf(address(this)) / 30 / 24 / stakedNFTs;
     }
 
     // If address already has ERC721 Token/s staked, calculate the rewards.
@@ -89,6 +90,7 @@ contract ERC721Staking is ReentrancyGuard {
 
         // Update the timeOfLastUpdate for the staker
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+        stakedNFTs = stakedNFTs + 1;
         updateRewardsPerHour();
     }
 
@@ -136,6 +138,7 @@ contract ERC721Staking is ReentrancyGuard {
 
         // Update the timeOfLastUpdate for the withdrawer
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+        stakedNFTs = stakedNFTs - 1;
         updateRewardsPerHour();
     }
 
