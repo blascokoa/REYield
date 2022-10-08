@@ -1,9 +1,12 @@
 # REYield - Real State Yield Distribution Protocol
 
 ## Description
+Novel protocol for share the profits accrued by Real Estate.
 
-## Install
+
+## Installation
 #### Contracts:
-- npm install --save-dev hardhat
-- npx hardhat
-- npm install --save-dev @openzeppelin/contracts
+- npm install
+
+#### dApp
+- npm install
