@@ -11,39 +11,59 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
-    uint256 maxSupply = 10000;
+    uint256 maxSupply = 100;
+    mapping(uint256 => bool) public isEnabled;
 
     Counters.Counter private _tokenIdCounter;
 
     constructor(string memory _name, string memory _symbol)
-    ERC721(_name, _symbol)
+    ERC721(_name, _symbol)  // REYield_KYC, KYC
     {}
 
-    // TODO Only deployer can mint
-    // TODO if user already has a token, they can't mint another
-    function mint(address _user, uint256 _amount) public {
+    modifier onlyNew (address _user){
+        require(balanceOf(_user) == 0, "You already have a token");
+    }
+
+    function disableKYC(uint256 _tokenId) public onlyOwner {
+        isEnabled[_tokenId] = false;
+    }
+
+    function enableKYC(uint256 _tokenId) public onlyOwner {
+        isEnabled[_tokenId] = true;
+    }
+
+    function modifyMaxSupply(uint256 _maxSupply) public onlyOwner {
+        maxSupply = _maxSupply;
+    }
+
+    function mint(address _user, uint256 _amount) public onlyOwner onlyNew(_user) {
         for (uint256 i; i < _amount; i++) {
             _tokenIdCounter.increment();
             uint256 tokenId = _tokenIdCounter.current();
+            isEnabled[tokenId] = true;
             _safeMint(_user, tokenId);
         }
     }
 
-    function tokensOfOwner(address _owner)
-    public
-    view
-    returns (uint256[] memory)
-    {
-        uint256 ownerTokenCount = balanceOf(_owner);
-        uint256[] memory ownedTokenIds = new uint256[](ownerTokenCount);
-        for (uint256 i; i < ownerTokenCount; ++i) {
-            ownedTokenIds[i] = tokenOfOwnerByIndex(_owner, i);
-        }
-        return ownedTokenIds;
+    // Disable transfers
+    function transferFrom(address from, address to, uint256 tokenId) public override {
+        revert("transferFrom: cannot transfer NFT");
+    }
+
+    function transfer(address from, address to, uint256 tokenId) public override {
+        revert("transfer: cannot transfer NFT");
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override {
+        revert("safeTransferFrom: cannot transfer NFT");
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes memory _data) public override {
+        revert("safeTransferFrom: cannot transfer NFT");
     }
 
     // The following functions are overrides required by Solidity.
-    // TODO disable transfers
+    // Hook that is called before any token transfer. This includes minting and burning.
     function _beforeTokenTransfer(
         address from,
         address to,
