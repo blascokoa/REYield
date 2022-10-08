@@ -20,8 +20,9 @@ contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
     ERC721(_name, _symbol)  // REYield_KYC, KYC
     {}
 
-    modifier onlyNew (address _user){
+    modifier onlyNew (address _user) {
         require(balanceOf(_user) == 0, "You already have a token");
+        _;
     }
 
     function disableKYC(uint256 _tokenId) public onlyOwner {
@@ -36,13 +37,11 @@ contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
         maxSupply = _maxSupply;
     }
 
-    function mint(address _user, uint256 _amount) public onlyOwner onlyNew(_user) {
-        for (uint256 i; i < _amount; i++) {
-            _tokenIdCounter.increment();
-            uint256 tokenId = _tokenIdCounter.current();
-            isEnabled[tokenId] = true;
-            _safeMint(_user, tokenId);
-        }
+    function mint(address _user) public onlyOwner onlyNew(_user) {
+        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter.current();
+        isEnabled[tokenId] = true;
+        _safeMint(_user, tokenId);
     }
 
     // Disable transfers
@@ -50,9 +49,6 @@ contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
         revert("transferFrom: cannot transfer NFT");
     }
 
-    function transfer(address from, address to, uint256 tokenId) public override {
-        revert("transfer: cannot transfer NFT");
-    }
 
     function safeTransferFrom(address from, address to, uint256 tokenId) public override {
         revert("safeTransferFrom: cannot transfer NFT");
