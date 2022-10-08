@@ -13,6 +13,9 @@ contract ERC721Staking is ReentrancyGuard {
     IERC20 public immutable rewardsToken;
     IERC721 public immutable nftCollection;
 
+    // Rewards per hour per token deposited in wei.
+    uint256 private rewardsPerHour = 10000;
+
     // Constructor function to set the rewards token and the NFT collection addresses
     constructor(IERC721 _nftCollection, IERC20 _rewardsToken) {
         nftCollection = _nftCollection;
@@ -40,15 +43,17 @@ contract ERC721Staking is ReentrancyGuard {
         uint256 unclaimedRewards;
     }
 
-    // Rewards per hour per token deposited in wei.
-    uint256 private rewardsPerHour = 100000;
-
     // Mapping of User Address to Staker info
     mapping(address => Staker) public stakers;
 
     // Mapping of Token Id to staker. Made for the SC to remeber
     // who to send back the ERC721 Token to.
     mapping(uint256 => address) public stakerAddress;
+
+
+    function updateRewardsPerHour() public {
+        rewardsPerHour = rewardsToken.balanceOf(address(this)) / 30 / 24 / StakedToken.length;
+    }
 
     // If address already has ERC721 Token/s staked, calculate the rewards.
     // Increment the amountStaked and map msg.sender to the Token Id of the staked
@@ -84,6 +89,7 @@ contract ERC721Staking is ReentrancyGuard {
 
         // Update the timeOfLastUpdate for the staker
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+        updateRewardsPerHour();
     }
 
     // Check if user has any ERC721 Tokens Staked and if they tried to withdraw,
@@ -130,6 +136,7 @@ contract ERC721Staking is ReentrancyGuard {
 
         // Update the timeOfLastUpdate for the withdrawer
         stakers[msg.sender].timeOfLastUpdate = block.timestamp;
+        updateRewardsPerHour();
     }
 
     // Calculate rewards for the msg.sender, check if there are any rewards
@@ -183,7 +190,7 @@ contract ERC721Staking is ReentrancyGuard {
     /////////////
 
     // Calculate rewards for param _staker by calculating the time passed
-    // since last update in hours and mulitplying it to ERC721 Tokens Staked
+    // since last update in hours and multiplying it to ERC721 Tokens Staked
     // and rewardsPerHour.
     function calculateRewards(address _staker)
     internal
