@@ -6,17 +6,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-interface IERC721 {
-    function balanceOf(address owner) external view returns (uint256 balance);
-}
-
 interface IERC20 {
+    function balanceOf(address owner) external view returns (uint256 balance);
     function transfer(address recipient, uint256 amount) external returns (bool);
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
 // Simple NFT Collection Smart Contract
 contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
+
     using Counters for Counters.Counter;
 
     uint256 maxSupply = 10;
@@ -35,11 +33,11 @@ contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
     }
 
     function setAcceptedToken(address _token) public onlyOwner {
-        paymentToken = IERC20(_token);
+        paymentToken = _token;
     }
 
-    function setKycTokenContract(address _token) public onlyOwner {
-        kycTokenContract = IERC721(_token);
+    function setKycTokenContract(address _tokenAdd) public onlyOwner {
+        kycTokenContract = _tokenAdd;
     }
 
     function setMintPrice(uint256 _price) public onlyOwner {
