@@ -8,29 +8,13 @@ import * as REY_nft from "../artifacts/contracts/erc721_collection.sol/REY_NFT.j
 import * as REY_Staking from "../artifacts/contracts/staking_contract.sol/ERC721Staking.json";
 
 async function main() {
-  // @ts-ignore
-  // const wallet = new ethers.Wallet(process.env.PRIVATE_KEY as String);
-  // console.log(`Using address ${wallet.address}`);
+  const REYield_KYC = await ethers.getContractFactory("REY_KYC");
+  const reyield_kyc = await REYield_KYC.deploy("hello", "ASD");
 
-  // const provider = new ethers.providers.JsonRpcProvider("https://stardust.metis.io/?owner=588")
-  // const signer = provider.getSigner(wallet.address);
+  await reyield_kyc.deployed();
 
-  const Lock = await ethers.getContractFactory("REY_KYC");
-  const lock = await Lock.deploy("hello", "ASD");
+  console.log(`deployed to ${reyield_kyc.address}`);
 
-  await lock.deployed();
-
-  console.log(`deployed to ${lock.address}`);
-
-  // const NFTContractFactory = new ethers.ContractFactory(
-  //   REY_kyc.abi,
-  //   REY_kyc.bytecode,
-  //   signer
-  // );
-  //
-  // let NFTContract = await NFTContractFactory.deploy("REY_KYC", "REY_KYC");
-  // await NFTContract.deployed();
-  // console.log(`Contract deployed at ${NFTContract.address}`);
 }
 
 main().catch((error) => {
