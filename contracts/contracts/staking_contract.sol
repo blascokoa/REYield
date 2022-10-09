@@ -5,12 +5,13 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ERC721Staking is ReentrancyGuard {
+contract REYieldStaking is ReentrancyGuard, Ownable {
     using SafeERC20 for IERC20;
 
     // Interfaces for ERC20 and ERC721
-    IERC20 public immutable rewardsToken;
+    IERC20 public rewardsToken;
     IERC721 public immutable nftCollection;
 
     // Rewards per hour per token deposited in wei.
@@ -51,6 +52,9 @@ contract ERC721Staking is ReentrancyGuard {
     // who to send back the ERC721 Token to.
     mapping(uint256 => address) public stakerAddress;
 
+    function updateRewardsToken(IERC20 _rewardsToken) public onlyOwner {
+        rewardsToken = _rewardsToken;
+    }
 
     function updateRewardsPerHour() public {
         rewardsPerHour = rewardsToken.balanceOf(address(this)) / 30 / 24 / stakedNFTs;

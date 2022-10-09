@@ -20,6 +20,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     uint256 maxSupply = 10;
     address public paymentToken = 0x0000000000000000000000000000000000000000;
     address public kycTokenContract = 0x0000000000000000000000000000000000000000;
+    address public stakingContract = 0x0000000000000000000000000000000000000000;
     uint256 public mintPrice = 1 * 10**18;
     Counters.Counter private _tokenIdCounter;
 
@@ -28,6 +29,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     {}
 
     modifier ownKyc(address _user) {
+        require(_user == stakingContract, "This is not the staking contract");
         require(IERC721(kycTokenContract).balanceOf(_user) > 0, "You do not own a KYC token");
         _;
     }
@@ -62,6 +64,10 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     function withdraw() public onlyOwner {
         (bool success) = IERC20(paymentToken).transfer(msg.sender, IERC20(paymentToken).balanceOf(address(this)));
         require(success);
+    }
+
+    function setStakingContract(address _stakingContract) public onlyOwner {
+        stakingContract = _stakingContract;
     }
 
     function tokensOfOwner(address _owner)
