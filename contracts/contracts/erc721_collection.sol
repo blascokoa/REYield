@@ -13,7 +13,7 @@ interface IERC20 {
 }
 
 // Simple NFT Collection Smart Contract
-contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
+contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
 
     using Counters for Counters.Counter;
 

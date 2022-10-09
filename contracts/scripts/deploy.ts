@@ -1,22 +1,38 @@
 import { ethers } from "hardhat";
+import "dotenv/config";
+// @ts-ignore
+import * as REY_kyc from "../artifacts/contracts/erc721_KYC.sol/REY_KYC.json";
+// @ts-ignore
+import * as REY_nft from "../artifacts/contracts/erc721_collection.sol/REY_NFT.json";
+// @ts-ignore
+import * as REY_Staking from "../artifacts/contracts/staking_contract.sol/ERC721Staking.json";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  // @ts-ignore
+  // const wallet = new ethers.Wallet(process.env.PRIVATE_KEY as String);
+  // console.log(`Using address ${wallet.address}`);
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  // const provider = new ethers.providers.JsonRpcProvider("https://stardust.metis.io/?owner=588")
+  // const signer = provider.getSigner(wallet.address);
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const Lock = await ethers.getContractFactory("REY_KYC");
+  const lock = await Lock.deploy("hello", "ASD");
 
   await lock.deployed();
 
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log(`deployed to ${lock.address}`);
+
+  // const NFTContractFactory = new ethers.ContractFactory(
+  //   REY_kyc.abi,
+  //   REY_kyc.bytecode,
+  //   signer
+  // );
+  //
+  // let NFTContract = await NFTContractFactory.deploy("REY_KYC", "REY_KYC");
+  // await NFTContract.deployed();
+  // console.log(`Contract deployed at ${NFTContract.address}`);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

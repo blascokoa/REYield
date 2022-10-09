@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 // Simple NFT Collection Smart Contract
 
-contract NFTCollection is ERC721, ERC721Enumerable, Ownable {
+contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
     uint256 maxSupply = 100;
