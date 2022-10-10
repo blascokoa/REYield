@@ -29,8 +29,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     {}
 
     modifier ownKyc(address _user) {
-        require(_user == stakingContract, "This is not the staking contract");
-        require(IERC721(kycTokenContract).balanceOf(_user) > 0, "You do not own a KYC token");
+        require(_user == stakingContract || IERC721(kycTokenContract).balanceOf(_user) > 0, "You are not authorized for mint");
         _;
     }
 
@@ -50,7 +49,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
         // check if can mint that amount
         require(_tokenIdCounter.current() + _amount <= maxSupply, "Mint limit exceeded");
         // check if there are enough funds
-        require(msg.value == _amount * 1000 * 10**18, "Incorrect amount sent");
+        // require(IERC20(paymentToken).balanceOf(msg.sender) >= _amount * mintPrice * 10**18, "Incorrect amount sent");
         // mint the tokens
         for (uint256 i; i < _amount; i++) {
             (bool success) = IERC20(paymentToken).transferFrom(msg.sender, address(this), mintPrice);
@@ -90,7 +89,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
         address to,
         uint256 tokenId
     ) internal override(ERC721, ERC721Enumerable) {
-        require(IERC721(kycTokenContract).balanceOf(from) > 0 && IERC721(kycTokenContract).balanceOf(to) > 0, "You cannot transfer tokens");
+        //require(IERC721(kycTokenContract).balanceOf(from) > 0 && IERC721(kycTokenContract).balanceOf(to) > 0, "You cannot transfer tokens");
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
