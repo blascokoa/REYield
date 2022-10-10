@@ -1,7 +1,9 @@
 import { ethers } from "hardhat";
 import "dotenv/config";
 // @ts-ignore
-import * as REY_kyc from "../artifacts/contracts/erc20_MAI.sol/MAIToken.json";
+import * as MAIToken from "../artifacts/contracts/erc20_MAI.sol/MAIToken.json";
+// @ts-ignore
+import * as REYieldStaking from "../artifacts/contracts/staking_contract.sol/REYieldStaking.json";
 
 async function main() {
   // Deploying the MAI token contract
@@ -11,11 +13,19 @@ async function main() {
   );
 
   const fillTx = await maiTokenInstance.transfer(
-    "0xDBC5214dd94A3d4be3A824fe890EebF0DB244D29",
-    "25000"
+    "0xE7b6902f1e90654ec83e28C4997CAeeAEA177563",
+    "2500000"
   );
   await fillTx.wait();
   console.log(`MAI tokens transferred to staking contract, tx: ${fillTx.hash}`);
+
+  const REYieldStaking = await ethers.getContractFactory("REYieldStaking");
+  const stakingContractInstance = await REYieldStaking.attach(
+    "0xE7b6902f1e90654ec83e28C4997CAeeAEA177563"
+  );
+  const updateRewardsTx = await stakingContractInstance.updateRewardsPerHour();
+  await updateRewardsTx.wait();
+  console.log("Rewards per hour updated: ", updateRewardsTx.hash);
 }
 
 main().catch((error) => {

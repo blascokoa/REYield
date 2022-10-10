@@ -12,4 +12,5 @@ npx hardhat node
 npx hardhat run scripts/deploy.ts --network metis
 npx hardhat run scripts/deployMAI.ts --network metis
 npx hardhat run scripts/fillStakingContract.ts --network metis
+npx hardhat run scripts/approve.ts --network metis
 ```
