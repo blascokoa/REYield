@@ -77,7 +77,7 @@ function App() {
 
       <Footer style={styles.footer}>
         <div style={{ display: "block" }}>
-          <a href={"t.me/dblama"}>Telegram Contact</a> {" | "}
+          <a href={"https://t.me/dblama"}>Telegram Contact</a> {" | "}
           <a href="https://github.com/blascokoa/REYield" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>

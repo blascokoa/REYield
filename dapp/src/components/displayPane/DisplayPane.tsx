@@ -2,7 +2,9 @@ import { useWeb3React } from "@web3-react/core";
 import { Divider } from "antd";
 import { Infos } from "./components/Infos";
 import { Status } from "./components/Status";
-import { TransferEth } from "./components/TransferEth";
+import { StakeNFT } from "./components/StakeNFT";
+import { MintNFT } from "./components/MintNFT";
+import { BuyNFT } from "./components/BuyNFT";
 
 const styles = {
   container: {
@@ -36,12 +38,16 @@ const DisplayPane = () => {
         <Status isActivating={isActivating} error={error} isActive={isActive} />
         <Infos chainId={chainId} />
 
-        {isActive && (
+        {isActive && chainId === 588 && (
           <>
             <Divider />
             <div style={{ display: "inline-flex", gap: "20px" }}>
+              <MintNFT />
               <Divider type="vertical" style={{ fontSize: "120px !important" }} />
-              <TransferEth />
+              <div style={{ width: "100%" }}>
+                <BuyNFT />
+                <StakeNFT />
+              </div>
             </div>
           </>
         )}
