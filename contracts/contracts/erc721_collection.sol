@@ -30,7 +30,9 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     }
 
     modifier ownKyc(address _user) {
-        require(_user == stakingContract || IERC721(kycTokenContract).balanceOf(_user) > 0, "You are not authorized for mint");
+        if (_user != stakingContract){
+            require(IERC721(kycTokenContract).balanceOf(_user) > 0 && IERC721(kycTokenContract).isEnabled(_user), "You are not authorized for mint");
+        }
         _;
     }
 
@@ -82,6 +84,15 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
             ownedTokenIds[i] = tokenOfOwnerByIndex(_owner, i);
         }
         return ownedTokenIds;
+    }
+
+    // Transfer Functions
+    function transferFrom(address from, address to, uint256 tokenId) public override ownKyc(to) {
+        super.transferFrom(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) public override ownKyc(to) {
+        super.safeTransferFrom(from, to, tokenId);
     }
 
     // The following functions are overrides required by Solidity.
