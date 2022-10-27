@@ -24,9 +24,10 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     uint256 public mintPrice = 1 * 10**18;
     Counters.Counter private _tokenIdCounter;
 
-    constructor(string memory _name, string memory _symbol)
-    ERC721(_name, _symbol)
-    {}
+    constructor(string memory _name, string memory _symbol, address _kycTokenContract, address _paymentToken) ERC721(_name, _symbol) {
+        kycTokenContract = _kycTokenContract;
+        paymentToken = _paymentToken;
+    }
 
     modifier ownKyc(address _user) {
         require(_user == stakingContract || IERC721(kycTokenContract).balanceOf(_user) > 0, "You are not authorized for mint");
