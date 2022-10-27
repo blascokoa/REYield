@@ -12,8 +12,7 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
     uint256 maxSupply = 100;
-    mapping(uint256 => bool) public isEnabled;
-
+    mapping(address => bool) public isEnabled;
     Counters.Counter private _tokenIdCounter;
 
     constructor(string memory _name, string memory _symbol)
@@ -40,7 +39,7 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
     function mint(address _user) public onlyOwner onlyNew(_user) {
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
-        isEnabled[tokenId] = true;
+        isEnabled[_user] = true;
         _safeMint(_user, tokenId);
     }
 
