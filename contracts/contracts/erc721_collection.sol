@@ -17,7 +17,7 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
 
     using Counters for Counters.Counter;
 
-    uint256 maxSupply = 10;
+    uint256 public maxSupply = 10;
     address public paymentToken = 0x0000000000000000000000000000000000000000;
     address public kycTokenContract = 0x0000000000000000000000000000000000000000;
     address public stakingContract = 0x0000000000000000000000000000000000000000;
@@ -33,12 +33,16 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
         _;
     }
 
-    function setAcceptedToken(address _token) public onlyOwner {
-        paymentToken = _token;
+    function setStakingContract(address _stakingContract) public onlyOwner {
+        stakingContract = _stakingContract;
     }
 
-    function setKycTokenContract(address _tokenAdd) public onlyOwner {
-        kycTokenContract = _tokenAdd;
+    function setPaymentToken(address _paymentToken) public onlyOwner {
+        paymentToken = _paymentToken;
+    }
+
+    function setKycTokenContract(address _kycTokenContract) public onlyOwner {
+        kycTokenContract = _kycTokenContract;
     }
 
     function setMintPrice(uint256 _price) public onlyOwner {
@@ -60,13 +64,10 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
         }
     }
 
+    // Withdraw funds from contract to deployer
     function withdraw() public onlyOwner {
         (bool success) = IERC20(paymentToken).transfer(msg.sender, IERC20(paymentToken).balanceOf(address(this)));
         require(success);
-    }
-
-    function setStakingContract(address _stakingContract) public onlyOwner {
-        stakingContract = _stakingContract;
     }
 
     function tokensOfOwner(address _owner)
@@ -83,7 +84,6 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
     }
 
     // The following functions are overrides required by Solidity.
-
     function _beforeTokenTransfer(
         address from,
         address to,
