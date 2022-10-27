@@ -15,8 +15,7 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
     mapping(address => bool) public isEnabled;
     Counters.Counter private _tokenIdCounter;
 
-    constructor(string memory _name, string memory _symbol)
-    ERC721(_name, _symbol)  // REYield_KYC, KYC
+    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol)  // REYield_KYC, KYC
     {}
 
     modifier onlyNew (address _user) {
