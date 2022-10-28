@@ -23,12 +23,16 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
         _;
     }
 
-    function disableKYC(uint256 _tokenId) public onlyOwner {
-        isEnabled[_tokenId] = false;
+    function disableKYC(address _user) public onlyOwner {
+        isEnabled[_user] = false;
     }
 
-    function enableKYC(uint256 _tokenId) public onlyOwner {
-        isEnabled[_tokenId] = true;
+    function enableKYC(address _user) public onlyOwner {
+        isEnabled[_user] = true;
+    }
+
+    function kycStatus(address _user) public view returns (bool) {
+        return isEnabled[_user];
     }
 
     function modifyMaxSupply(uint256 _maxSupply) public onlyOwner {

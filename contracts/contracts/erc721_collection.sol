@@ -12,6 +12,10 @@ interface IERC20 {
     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
 }
 
+interface IKycContract {
+    function kycStatus(address _user) external view returns (bool status);
+}
+
 // Simple NFT Collection Smart Contract
 contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
 
@@ -31,7 +35,8 @@ contract REY_NFT is ERC721, ERC721Enumerable, Ownable {
 
     modifier ownKyc(address _user) {
         if (_user != stakingContract){
-            require(IERC721(kycTokenContract).balanceOf(_user) > 0 && IERC721(kycTokenContract).isEnabled(_user), "You are not authorized for mint");
+            require(IERC721(kycTokenContract).balanceOf(_user) > 0 && IKycContract(kycTokenContract).kycStatus(_user), "You are not authorized for mint");
+            _;
         }
         _;
     }
