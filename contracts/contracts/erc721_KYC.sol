@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
 
-    uint256 maxSupply = 100;
+    uint256 public maxSupply = 100;
     mapping(address => bool) public isEnabled;
     Counters.Counter private _tokenIdCounter;
 
@@ -23,12 +23,17 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
         _;
     }
 
+    event Mint(address indexed _user, uint256 _id);
+    event kycStatusChange(address indexed _user, bool _status);
+
     function disableKYC(address _user) public onlyOwner {
         isEnabled[_user] = false;
+        emit kycStatusChange(_user, false);
     }
 
     function enableKYC(address _user) public onlyOwner {
         isEnabled[_user] = true;
+        emit kycStatusChange(_user, true);
     }
 
     function kycStatus(address _user) public view returns (bool) {
@@ -39,11 +44,13 @@ contract REY_KYC is ERC721, ERC721Enumerable, Ownable {
         maxSupply = _maxSupply;
     }
 
-    function mint(address _user) public onlyOwner onlyNew(_user) {
+    function mint(address _user) public onlyOwner onlyNew(_user) returns (uint256) {
         _tokenIdCounter.increment();
         uint256 tokenId = _tokenIdCounter.current();
         isEnabled[_user] = true;
         _safeMint(_user, tokenId);
+        emit Mint(_user, tokenId);
+        return tokenId;
     }
 
     // Disable transfers
