@@ -2,11 +2,17 @@ import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { Contract } from "ethers";
 
 describe("KYC Contracts", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshot in every test.
+  let kycContractInstance: Contract;
+  let owner: any;
+  let alice: any;
+  let bob: any;
+
   async function deployKycContract() {
     // Contracts are deployed using the first signer/account by default
     const [owner, alice, bob, charlie] = await ethers.getSigners();
@@ -17,12 +23,16 @@ describe("KYC Contracts", function () {
     return { kycContractInstance, owner, alice, bob, charlie };
   }
 
+  beforeEach(async function () {
+    const fixture = await loadFixture(deployKycContract);
+    kycContractInstance = fixture.kycContractInstance;
+    owner = fixture.owner;
+    alice = fixture.alice;
+    bob = fixture.bob;
+  });
+
   describe("Deployment", function () {
     it("Should set the right owner", async function () {
-      const { kycContractInstance, owner, alice } = await loadFixture(
-        deployKycContract
-      );
-
       expect(await kycContractInstance.owner()).to.equal(owner.address);
     });
   });
@@ -30,27 +40,16 @@ describe("KYC Contracts", function () {
   describe("Functionalities", function () {
     describe("Minting", function () {
       it("Owner should be able to mint", async function () {
-        const { kycContractInstance, owner, alice, bob } = await loadFixture(
-          deployKycContract
-        );
         expect(await kycContractInstance.connect(owner).mint(alice.address)).to
           .not.reverted;
       });
       it("Balance of user should be 1", async function () {
-        const { kycContractInstance, owner, alice, bob } = await loadFixture(
-          deployKycContract
-        );
-
         await kycContractInstance.connect(owner).mint(alice.address);
-
         expect(
           await kycContractInstance.connect(owner).balanceOf(alice.address)
         ).to.equal(ethers.utils.parseUnits("1", 0));
       });
       it("Cannot mint more than 1 to same wallet", async function () {
-        const { kycContractInstance, owner, alice, bob } = await loadFixture(
-          deployKycContract
-        );
         expect(
           await kycContractInstance.connect(owner).balanceOf(bob.address)
         ).to.equal(ethers.utils.parseUnits("0", 0));
@@ -66,9 +65,6 @@ describe("KYC Contracts", function () {
         ).to.revertedWith("You already have a token");
       });
       it("Alice trying to mint should revert", async function () {
-        const { kycContractInstance, owner, alice, bob } = await loadFixture(
-          deployKycContract
-        );
         await expect(kycContractInstance.connect(alice).mint(bob.address)).to.be
           .reverted;
         expect(
@@ -79,9 +75,6 @@ describe("KYC Contracts", function () {
     describe("Status Modification", function () {
       describe("KYC Status", function () {
         it("Owner Should be able to enable and disable KYC", async function () {
-          const { kycContractInstance, owner, alice, bob } = await loadFixture(
-            deployKycContract
-          );
           await kycContractInstance.connect(owner).mint(alice.address);
 
           expect(
@@ -95,9 +88,6 @@ describe("KYC Contracts", function () {
           ).to.be.false;
         });
         it("Alice Shouldn't be able to enable and disable KYC", async function () {
-          const { kycContractInstance, owner, alice, bob } = await loadFixture(
-            deployKycContract
-          );
           await kycContractInstance.connect(owner).mint(alice.address);
 
           await expect(
@@ -107,9 +97,6 @@ describe("KYC Contracts", function () {
       });
       describe("Max Supply", function () {
         it("Owner Should be able to change Max Supply", async function () {
-          const { kycContractInstance, owner, alice, bob } = await loadFixture(
-            deployKycContract
-          );
           expect(
             await kycContractInstance.connect(owner).maxSupply()
           ).to.be.equal(ethers.utils.parseUnits("100", 0));
@@ -123,9 +110,6 @@ describe("KYC Contracts", function () {
           ).to.be.equal(ethers.utils.parseUnits("200", 0));
         });
         it("Alice Shouldn't be able to change Max Supply", async function () {
-          const { kycContractInstance, owner, alice, bob } = await loadFixture(
-            deployKycContract
-          );
           expect(
             await kycContractInstance.connect(alice).maxSupply()
           ).to.be.equal(ethers.utils.parseUnits("100", 0));
@@ -142,12 +126,7 @@ describe("KYC Contracts", function () {
 
   describe("Transfers", function () {
     it("TransferFrom should revert", async function () {
-      const { kycContractInstance, owner, alice, bob } = await loadFixture(
-        deployKycContract
-      );
-
       await kycContractInstance.connect(owner).mint(owner.address);
-
       expect(
         await kycContractInstance.connect(owner).balanceOf(owner.address)
       ).to.be.equal(ethers.utils.parseUnits("1", 0));
@@ -164,12 +143,7 @@ describe("KYC Contracts", function () {
     });
 
     it("safeTransferFrom should revert", async function () {
-      const { kycContractInstance, owner, alice, bob } = await loadFixture(
-        deployKycContract
-      );
-
       await kycContractInstance.connect(owner).mint(owner.address);
-
       expect(
         await kycContractInstance.connect(owner).balanceOf(owner.address)
       ).to.be.equal(ethers.utils.parseUnits("1", 0));
@@ -199,19 +173,11 @@ describe("KYC Contracts", function () {
 
   describe("Events", function () {
     it("Should emit an event on minting", async function () {
-      const { kycContractInstance, owner, alice, bob } = await loadFixture(
-        deployKycContract
-      );
-
       await expect(
         kycContractInstance.connect(owner).mint(bob.address)
       ).to.emit(kycContractInstance, "Mint");
     });
     it("Should emit an event on kyc status change", async function () {
-      const { kycContractInstance, owner, alice, bob } = await loadFixture(
-        deployKycContract
-      );
-
       await kycContractInstance.connect(owner).mint(bob.address);
 
       await expect(
